@@ -175,6 +175,16 @@ LIBRARIES += glog gflags protobuf leveldb snappy \
 PYTHON_LIBRARIES := boost_python python2.7
 WARNINGS := -Wall -Wno-sign-compare
 
+#copied from caffe rc3 line 194
+ifeq ($(USE_OPENCV), 1)
+	LIBRARIES += opencv_core opencv_highgui opencv_imgproc 
+
+	ifeq ($(OPENCV_VERSION), 3)
+		LIBRARIES += opencv_imgcodecs
+	endif
+		
+endif
+
 ##############################
 # Set build directories
 ##############################
@@ -304,6 +314,11 @@ endif
 ifeq ($(WITH_PYTHON_LAYER), 1)
 	COMMON_FLAGS += -DWITH_PYTHON_LAYER
 	LIBRARIES += $(PYTHON_LIBRARIES)
+endif
+
+#copied from rc3 line 332
+ifeq ($(USE_OPENCV), 1)
+	COMMON_FLAGS += -DUSE_OPENCV
 endif
 
 # BLAS configuration (default = ATLAS)
