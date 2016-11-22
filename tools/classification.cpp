@@ -90,10 +90,10 @@ Classifier::Classifier(const string& model_file,
     SetMean(mean_file);
   }else if (mean != ""){
     stringstream ss(mean);
-    vector<int> bgr;
+    vector<float> bgr;
     string token;
     while(std::getline(ss, token, ',')) {
-      int v = atoi(token.c_str());
+      float v = atof(token.c_str());
       bgr.push_back(v);
     }
     CHECK(bgr.size() == 3)

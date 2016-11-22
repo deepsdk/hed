@@ -31,7 +31,7 @@ SRC_DIRS := $(shell find * -type d -exec bash -c "find {} -maxdepth 1 \
 # The target shared library name
 LIB_BUILD_DIR := $(BUILD_DIR)/lib
 STATIC_NAME := $(LIB_BUILD_DIR)/lib$(PROJECT).a
-DYNAMIC_NAME := $(LIB_BUILD_DIR)/lib$(PROJECT).so
+DYNAMIC_NAME := $(LIB_BUILD_DIR)/lib$(PROJECT)_hed.so
 
 ##############################
 # Get all source files
@@ -524,6 +524,7 @@ $(ALL_BUILD_DIRS): | $(BUILD_DIR_LINK)
 $(DYNAMIC_NAME): $(OBJS) | $(LIB_BUILD_DIR)
 	@ echo LD -o $@
 	$(Q)$(CXX) -shared -o $@ $(OBJS) $(LINKFLAGS) $(LDFLAGS) $(DYNAMIC_FLAGS)
+	@ cd $(BUILD_DIR)/lib; rm -f $(DYNAMIC_NAME_SHORT);   ln -s $(DYNAMIC_VERSIONED_NAME_SHORT) $(DYNAMIC_NAME_SHORT)
 
 $(STATIC_NAME): $(OBJS) | $(LIB_BUILD_DIR)
 	@ echo AR -o $@
@@ -575,8 +576,13 @@ $(TOOL_BUILD_DIR)/%: $(TOOL_BUILD_DIR)/%.bin | $(TOOL_BUILD_DIR)
 
 $(TOOL_BINS): %.bin : %.o | $(DYNAMIC_NAME)
 	@ echo CXX/LD -o $@
-	$(Q)$(CXX) $< -o $@ $(LINKFLAGS) -l$(PROJECT) $(LDFLAGS) \
-		-Wl,-rpath,$(ORIGIN)/../lib
+	@ echo ---------------------------
+	@ echo $(LINKFLAGS)
+	@ echo $(PROJECT)
+	@ echo $(LDFLAGS)
+	@ echo ---------------------------
+	$(Q)$(CXX) $< -o $@ $(LINKFLAGS) -l$(PROJECT)_hed $(LDFLAGS) \
+		-Wl,-rpath,$(ORIGIN)/../lib                            
 
 $(EXAMPLE_BINS): %.bin : %.o | $(DYNAMIC_NAME)
 	@ echo CXX/LD -o $@
